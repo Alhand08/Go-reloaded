@@ -1,44 +1,74 @@
-Un outil simple de complétion, d'édition et d'autocorrection de texte écrit en Go, en utilisant uniquement la bibliothèque standard.
+# Go‑Reloaded 🎯
 
-Fonctionnalités:
-Hex → Décimal : convertit en décimal le nombre hexadécimal placé avant (hex).
-Bin → Décimal : convertit en décimal le nombre binaire placé avant (bin).
-Majuscules / Minuscules / Capitalisation : gère (up), (low), (cap) ainsi que les modificateurs multi-mots comme (up, 2).
-Mise en forme de la ponctuation : espace correctement la ponctuation . , ! ? : ; et gère les groupes de ponctuation comme ... ou !?.
-Apostrophes : met en forme 'mot' ou 'plusieurs mots' correctement.
-Correction grammaticale : remplace a par an devant une voyelle ou un « h ».
+Un outil simple de **complétion, d'édition et d'autocorrection de texte** écrit en Go, en utilisant uniquement la bibliothèque standard.
 
+---
 
-Utilisation:
-bash
+## ⚙️ Fonctionnalités
+
+- **Hex → Décimal** : convertit en décimal le nombre hexadécimal placé avant `(hex)`.
+- **Bin → Décimal** : convertit en décimal le nombre binaire placé avant `(bin)`.
+- **Majuscules / Minuscules / Capitalisation** : gère `(up)`, `(low)`, `(cap)` ainsi que les modificateurs multi-mots comme `(up, 2)`.
+- **Mise en forme de la ponctuation** : espace correctement la ponctuation `. , ! ? : ;` et gère les groupes de ponctuation comme `...` ou `!?`.
+- **Apostrophes** : met en forme `'mot'` ou `'plusieurs mots'` correctement.
+- **Correction grammaticale** : remplace `a` par `an` devant une voyelle ou un « h ».
+
+---
+
+## 🧪 Prise en main
+
+### Installation
+
+```bash
+git clone https://github.com/Alhand08/Go-reloaded.git
+cd Go-Reloaded
+go build -o go-reloaded .
+```
+
+Cette commande construit le binaire `go-reloaded`.
+
+---
+
+## 🚀 Utilisation
+
+```bash
 ./go-reloaded sample.txt result.txt
+```
 
 ou directement avec Go :
 
-dans le terminal 
-
+```bash
 go run . sample.txt result.txt
-sample.txt – fichier d'entrée contenant le texte à modifier
-result.txt – fichier de sortie contenant le texte transformé
-Exemple
+```
 
-Entrée (sample.txt) :
+- `sample.txt` – fichier d'entrée contenant le texte à modifier
+- `result.txt` – fichier de sortie contenant le texte transformé
 
+### Exemple
+
+Entrée (`sample.txt`) :
+
+```
 it (cap) was the best of times, it was the worst of times (up) , it was the age of wisdom,...
+```
 
 Exécution :
 
-dans le terminal: 
-
+```bash
 ./go-reloaded sample.txt result.txt
+```
 
-Sortie (sample.txt → result.txt) :
+Sortie (`sample.txt` → `result.txt`) :
 
+```
 It was the best of times, it was the worst of TIMES,...
+```
 
-Structure du projet:
+---
 
+## 📁 Structure du projet
 
+```
 Go-Reloaded/
 ├── main.go              # Point d'entrée
 ├── go.mod
@@ -50,3 +80,10 @@ Go-Reloaded/
 └── main/
     ├── sample.txt       # Exemple d'entrée
     └── result.txt       # Exemple de sortie
+```
+
+---
+
+## 📄 Licence
+
+Ce projet est distribué sous **licence MIT**. Voir [LICENSE](./LICENSE) pour plus de détails.
