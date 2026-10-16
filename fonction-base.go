@@ -5,72 +5,72 @@ import (
 	"unicode"
 )
 
-func SupprimerRune(s []rune, i int) []rune {
-	if i < 0 || i >= len(s) {
-		return s
+func SupprimerRune(caracteres []rune, position int) []rune {
+	if position < 0 || position >= len(caracteres) {
+		return caracteres
 	}
-	return append(s[:i], s[i+1:]...)
+	return append(caracteres[:position], caracteres[position+1:]...)
 }
 
-func SupprimerChaine(arr []string, i int) []string {
-	if i < 0 || i >= len(arr) {
-		return arr
+func SupprimerChaine(mots []string, position int) []string {
+	if position < 0 || position >= len(mots) {
+		return mots
 	}
-	return append(arr[:i], arr[i+1:]...)
+	return append(mots[:position], mots[position+1:]...)
 }
 
-func Capitaliser(str string) string {
-	runes := []rune(str)
-	start := false
-	for i := 0; i < len(runes); i++ {
-		if unicode.IsLetter(runes[i]) && !start {
-			runes[i] = unicode.ToUpper(runes[i])
-			start = true
+func Capitaliser(mot string) string {
+	caracteres := []rune(mot)
+	premiereLettreTrouvee := false
+	for position := 0; position < len(caracteres); position++ {
+		if unicode.IsLetter(caracteres[position]) && !premiereLettreTrouvee {
+			caracteres[position] = unicode.ToUpper(caracteres[position])
+			premiereLettreTrouvee = true
 		} else {
-			runes[i] = unicode.ToLower(runes[i])
+			caracteres[position] = unicode.ToLower(caracteres[position])
 		}
 	}
-	return string(runes)
+	return string(caracteres)
 }
 
-func AjouterChaine(s []string, i int, v string) []string {
-	result := make([]string, len(s)+1)
-	j := 0
-	for k := 0; k < len(result); k++ {
-		if k == i {
-			result[k] = v
+func AjouterChaine(mots []string, position int, nouveauMot string) []string {
+	resultat := make([]string, len(mots)+1)
+	positionSource := 0
+	for positionResultat := 0; positionResultat < len(resultat); positionResultat++ {
+		if positionResultat == position {
+			resultat[positionResultat] = nouveauMot
 		} else {
-			result[k] = s[j]
-			j++
+			resultat[positionResultat] = mots[positionSource]
+			positionSource++
 		}
 	}
-	return result
+	return resultat
 }
 
-func AjouterEspaceApres(s []rune, i int) []rune {
-	if i < 0 || i >= len(s) {
-		return s
+func AjouterEspaceApres(caracteres []rune, position int) []rune {
+	if position < 0 || position >= len(caracteres) {
+		return caracteres
 	}
-	arr := []rune{}
-	for j := 0; j <= i; j++ {
-		arr = append(arr, s[j])
+	nouveauxCaracteres := []rune{}
+	for numero := 0; numero <= position; numero++ {
+		nouveauxCaracteres = append(nouveauxCaracteres, caracteres[numero])
 	}
-	arr = append(arr, ' ')
-	for j := i + 1; j < len(s); j++ {
-		arr = append(arr, s[j])
+	nouveauxCaracteres = append(nouveauxCaracteres, ' ')
+	for numero := position + 1; numero < len(caracteres); numero++ {
+		nouveauxCaracteres = append(nouveauxCaracteres, caracteres[numero])
 	}
-	return arr
+	return nouveauxCaracteres
 }
 
-func EstPonctuation(r rune) bool {
-	return r == '.' || r == ',' || r == '!' || r == '?' || r == ';' || r == ':'
+func EstPonctuation(caractere rune) bool {
+	return caractere == '.' || caractere == ',' || caractere == '!' || caractere == '?' || caractere == ';' || caractere == ':'
 }
 
-func estVoyelle(str string) bool {
-	str = strings.TrimLeft(str, "'\"(  ")
-	if str == "" {
+func estVoyelle(mot string) bool {
+	mot = strings.TrimLeft(mot, "'\"(  ")
+	if mot == "" {
 		return false
 	}
-	v := rune(strings.ToLower(string(str[0]))[0])
-	return v == 'a' || v == 'e' || v == 'i' || v == 'o' || v == 'u' || v == 'h'
+	premiereLettre := rune(strings.ToLower(string(mot[0]))[0])
+	return premiereLettre == 'a' || premiereLettre == 'e' || premiereLettre == 'i' || premiereLettre == 'o' || premiereLettre == 'u' || premiereLettre == 'h'
 }

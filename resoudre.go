@@ -1,9 +1,9 @@
 package main
 
-func Resoudre(str string) string {
-	str = TraiterOrdres(str)
-	str = TraiterPonctuation(str)
-	str = TraiterGuillemetsSimples(str)
-	str = TraiterVoyelles(str)
-	return str
+func Resoudre(texte string) string {
+	texte = TraiterOrdres(texte)
+	texte = TraiterPonctuation(texte)
+	texte = TraiterGuillemetsSimples(texte)
+	texte = TraiterVoyelles(texte)
+	return texte
 }

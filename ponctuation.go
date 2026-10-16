@@ -5,81 +5,81 @@ import (
 	"unicode"
 )
 
-func TraiterPonctuationLigne(str string) string {
-	arr := []rune(str)
-
-	for i := 1; i < len(arr); i++ {
-		if EstPonctuation(arr[i]) {
-			if i-1 >= 0 && arr[i-1] == ' ' {
-				arr = SupprimerRune(arr, i-1)
-				i -= 2
-				if i < 0 {
-					i = 0
+func TraiterPonctuationLigne(ligne string) string {
+	caracteres := []rune(ligne)
+	for position := 1; position < len(caracteres); position++ {
+		if EstPonctuation(caracteres[position]) {
+			if position-1 >= 0 && caracteres[position-1] == ' ' {
+				caracteres = SupprimerRune(caracteres, position-1)
+				position -= 2
+				if position < 0 {
+					position = 0
 				}
 			}
 		}
 	}
 
-	for i := 0; i < len(arr)-1; i++ {
-		if EstPonctuation(arr[i]) && arr[i+1] == ' ' {
-			for i+2 < len(arr) && arr[i+2] == ' ' {
-				arr = SupprimerRune(arr, i+1)
+	// Traiter les espaces APRÈS la ponctuation
+	for position := 0; position < len(caracteres)-1; position++ {
+		// Supprimer les espaces multiples après une ponctuation
+		if EstPonctuation(caracteres[position]) && caracteres[position+1] == ' ' {
+			for position+2 < len(caracteres) && caracteres[position+2] == ' ' {
+				caracteres = SupprimerRune(caracteres, position+1)
 			}
 		}
-		// Ajouter un espace après la ponctuation si nécessaire
-		if EstPonctuation(arr[i]) && !EstPonctuation(arr[i+1]) && arr[i+1] != ' ' && arr[i+1] != '\'' && arr[i+1] != ')' && arr[i+1] != '"' {
-			arr = AjouterEspaceApres(arr, i)
+		if EstPonctuation(caracteres[position]) && !EstPonctuation(caracteres[position+1]) && caracteres[position+1] != ' ' && caracteres[position+1] != '\'' && caracteres[position+1] != ')' && caracteres[position+1] != '"' {
+			caracteres = AjouterEspaceApres(caracteres, position)
 		}
 	}
 
-	return string(arr)
+	return string(caracteres)
 }
 
-func TraiterPonctuation(str string) string {
-	lines := strings.Split(str, "\n")
-	for i := range lines {
-		lines[i] = TraiterPonctuationLigne(lines[i])
+func TraiterPonctuation(texte string) string {
+	lignes := strings.Split(texte, "\n")
+	for numeroLigne := range lignes {
+		lignes[numeroLigne] = TraiterPonctuationLigne(lignes[numeroLigne])
 	}
-	return strings.Join(lines, "\n")
+	return strings.Join(lignes, "\n")
 }
 
-func TraiterGuillemetsSimplesLigne(str string) string {
-	r := []rune(str)
-	start := false
-	li := 0
-	for i := 0; i < len(r); i++ {
+func TraiterGuillemetsSimplesLigne(ligne string) string {
+	caracteres := []rune(ligne)
+	guillemetOuvert := false
+	positionOuverture := 0
+	for position := 0; position < len(caracteres); position++ {
 		// Ignorer les apostrophes au milieu des mots (ex: don't)
-		if i-1 >= 0 && i+1 < len(r) && r[i] == '\'' && unicode.IsLetter(r[i-1]) && unicode.IsLetter(r[i+1]) {
+		if position-1 >= 0 && position+1 < len(caracteres) && caracteres[position] == '\'' && unicode.IsLetter(caracteres[position-1]) && unicode.IsLetter(caracteres[position+1]) {
 			continue
 		}
-		if r[i] == '\'' && !start {
-			start = true
-			li = i
-		} else if r[i] == '\'' && start {
-			if li+1 < len(r) && r[li+1] == ' ' {
-				r = SupprimerRune(r, li+1)
-				i -= 2
-				if i < 0 {
-					i = 0
+		if caracteres[position] == '\'' && !guillemetOuvert {
+			guillemetOuvert = true
+			positionOuverture = position
+		} else if caracteres[position] == '\'' && guillemetOuvert {
+			if positionOuverture+1 < len(caracteres) && caracteres[positionOuverture+1] == ' ' {
+				caracteres = SupprimerRune(caracteres, positionOuverture+1)
+				position -= 2
+				if position < 0 {
+					position = 0
 				}
-			} else if i-1 >= 0 && r[i-1] == ' ' {
-				r = SupprimerRune(r, i-1)
-				i -= 2
-				if i < 0 {
-					i = 0
+			} else if position-1 >= 0 && caracteres[position-1] == ' ' {
+				caracteres = SupprimerRune(caracteres, position-1)
+				position -= 2
+				if position < 0 {
+					position = 0
 				}
 			} else {
-				start = false
+				guillemetOuvert = false
 			}
 		}
 	}
-	return string(r)
+	return string(caracteres)
 }
 
-func TraiterGuillemetsSimples(str string) string {
-	lines := strings.Split(str, "\n")
-	for i := range lines {
-		lines[i] = TraiterGuillemetsSimplesLigne(lines[i])
+func TraiterGuillemetsSimples(texte string) string {
+	lignes := strings.Split(texte, "\n")
+	for numeroLigne := range lignes {
+		lignes[numeroLigne] = TraiterGuillemetsSimplesLigne(lignes[numeroLigne])
 	}
-	return strings.Join(lines, "\n")
+	return strings.Join(lignes, "\n")
 }

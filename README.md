@@ -1,89 +1,40 @@
-# Go‑Reloaded 🎯
+# Go-Reloaded
 
-Un outil simple de **complétion, d'édition et d'autocorrection de texte** écrit en Go, en utilisant uniquement la bibliothèque standard.
+Petit outil en ligne de commande, écrit en Go (bibliothèque standard uniquement). Il lit un fichier texte, corrige ou transforme certains éléments, puis écrit le résultat dans un second fichier.
 
----
-
-## ⚙️ Fonctionnalités
-
-- **Hex → Décimal** : convertit en décimal le nombre hexadécimal placé avant `(hex)`.
-- **Bin → Décimal** : convertit en décimal le nombre binaire placé avant `(bin)`.
-- **Majuscules / Minuscules / Capitalisation** : gère `(up)`, `(low)`, `(cap)` ainsi que les modificateurs multi-mots comme `(up, 2)`.
-- **Mise en forme de la ponctuation** : espace correctement la ponctuation `. , ! ? : ;` et gère les groupes de ponctuation comme `...` ou `!?`.
-- **Apostrophes** : met en forme `'mot'` ou `'plusieurs mots'` correctement.
-- **Correction grammaticale** : remplace `a` par `an` devant une voyelle ou un « h ».
-
----
-
-## 🧪 Prise en main
-
-### Installation
+## Utilisation
 
 ```bash
-git clone https://github.com/Alhand08/Go-reloaded.git
-cd Go-Reloaded
-go build -o go-reloaded .
+go run . entree.txt sortie.txt
 ```
 
-Cette commande construit le binaire `go-reloaded`.
+Le premier argument est le fichier à lire, le second est le fichier à créer.
 
----
+## Transformations appliquées
 
-## 🚀 Utilisation
+| Élément dans le texte | Effet |
+|---|---|
+| `(hex)` | le mot précédent (nombre hexadécimal) est converti en décimal |
+| `(bin)` | le mot précédent (nombre binaire) est converti en décimal |
+| `(up)`, `(low)`, `(cap)` | le mot précédent passe en majuscules, en minuscules ou prend une majuscule initiale |
+| `(up, n)`, `(low, n)`, `(cap, n)` | idem, sur les `n` mots précédents |
+| `. , ! ? : ;` | collés au mot précédent, suivis d'un espace ; les groupes comme `...` ou `!?` restent ensemble |
+| `' '` | les apostrophes sont collées au texte qu'elles entourent |
+| `a` | devient `an` devant une voyelle ou un `h` |
 
-```bash
-./go-reloaded sample.txt result.txt
-```
+## Organisation du code
 
-ou directement avec Go :
+- `main.go` : lecture des arguments, lecture et écriture des fichiers
+- `resoudre.go` : enchaîne les étapes de transformation
+- `cap.go` : gestion des drapeaux `(hex)`, `(bin)`, `(up)`, `(low)`, `(cap)`
+- `ponctuation.go` : ponctuation et guillemets simples
+- `voyelles.go` : correction `a` → `an`
+- `fonction-base.go` : fonctions utilitaires
+- `main/` : fichiers d'exemple (`sample.txt`, `result.txt`)
 
-```bash
-go run . sample.txt result.txt
-```
+Le texte est traité ligne par ligne, dans cet ordre : drapeaux, ponctuation, guillemets, puis `a` / `an`.
 
-- `sample.txt` – fichier d'entrée contenant le texte à modifier
-- `result.txt` – fichier de sortie contenant le texte transformé
+## Limites connues
 
-### Exemple
-
-Entrée (`sample.txt`) :
-
-```
-it (cap) was the best of times, it was the worst of times (up) , it was the age of wisdom,...
-```
-
-Exécution :
-
-```bash
-./go-reloaded sample.txt result.txt
-```
-
-Sortie (`sample.txt` → `result.txt`) :
-
-```
-It was the best of times, it was the worst of TIMES,...
-```
-
----
-
-## 📁 Structure du projet
-
-```
-Go-Reloaded/
-├── main.go              # Point d'entrée
-├── go.mod
-├── resoudre.go          # Enchaîne toutes les transformations
-├── cap.go               # Drapeaux (hex), (bin), (up), (low), (cap)
-├── ponctuation.go       # Ponctuation et guillemets simples
-├── voyelles.go          # Correction a → an
-├── fonction-base.go     # Fonctions utilitaires
-└── main/
-    ├── sample.txt       # Exemple d'entrée
-    └── result.txt       # Exemple de sortie
-```
-
----
-
-## 📄 Licence
-
-Ce projet est distribué sous **licence MIT**. Voir [LICENSE](./LICENSE) pour plus de détails.
+- Les nombres décimaux (`3.14`) et les heures (`10:30`) sont traités comme de la ponctuation et reçoivent un espace.
+- Aucun test unitaire n'est encore écrit.

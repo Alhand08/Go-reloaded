@@ -5,36 +5,35 @@ import (
 	"strings"
 )
 
-// Separe le drapeau et la ponctuation collee a la fin (ex: "(hex)," -> "(hex)", ",")
-func ExtrairePonctuation(s string) (string, string) {
-	punct := ""
-	for len(s) > 0 {
-		lastChar := s[len(s)-1]
-		if lastChar == '.' || lastChar == ',' || lastChar == '!' || lastChar == '?' || lastChar == ';' || lastChar == ':' {
-			punct = string(lastChar) + punct
-			s = s[:len(s)-1]
+func ExtrairePonctuation(texte string) (string, string) {
+	ponctuationFinale := ""
+	for len(texte) > 0 {
+		dernierCaractere := texte[len(texte)-1]
+		if dernierCaractere == '.' || dernierCaractere == ',' || dernierCaractere == '!' || dernierCaractere == '?' || dernierCaractere == ';' || dernierCaractere == ':' {
+			ponctuationFinale = string(dernierCaractere) + ponctuationFinale
+			texte = texte[:len(texte)-1]
 		} else {
 			break
 		}
 	}
-	return s, punct
+	return texte, ponctuationFinale
 }
 
-func EstDrapeauAvecNombre(s string) (bool, string, int) {
-	paramKeys := []string{"up", "low", "cap"}
+func EstDrapeauAvecNombre(texte string) (bool, string, int) {
+	nomsAcceptes := []string{"up", "low", "cap"}
 
-	if strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
-		content := strings.TrimSuffix(strings.TrimPrefix(s, "("), ")")
-		parts := strings.SplitN(content, ",", 2)
+	if strings.HasPrefix(texte, "(") && strings.HasSuffix(texte, ")") {
+		contenu := strings.TrimSuffix(strings.TrimPrefix(texte, "("), ")")
+		morceaux := strings.SplitN(contenu, ",", 2)
 
-		if len(parts) == 2 {
-			flagName := strings.TrimSpace(parts[0])
-			numberStr := strings.TrimSpace(parts[1])
+		if len(morceaux) == 2 {
+			nomDrapeau := strings.TrimSpace(morceaux[0])
+			nombreTexte := strings.TrimSpace(morceaux[1])
 
-			for _, key := range paramKeys {
-				if flagName == key {
-					if nbr, err := strconv.Atoi(numberStr); err == nil {
-						return true, key, nbr
+			for _, nomAccepte := range nomsAcceptes {
+				if nomDrapeau == nomAccepte {
+					if nombre, erreur := strconv.Atoi(nombreTexte); erreur == nil {
+						return true, nomAccepte, nombre
 					}
 				}
 			}
@@ -44,122 +43,120 @@ func EstDrapeauAvecNombre(s string) (bool, string, int) {
 	return false, "", -1
 }
 
-func EstDrapeauSimple(str string) bool {
-	return str == "(hex)" || str == "(bin)" || str == "(up)" || str == "(low)" || str == "(cap)"
+func EstDrapeauSimple(texte string) bool {
+	return texte == "(hex)" || texte == "(bin)" || texte == "(up)" || texte == "(low)" || texte == "(cap)"
 }
 
-func estMotValide(s string) bool {
-	if strings.TrimSpace(s) == "" {
+func estMotValide(mot string) bool {
+	if strings.TrimSpace(mot) == "" {
 		return false
 	}
-	for _, r := range s {
-		if r != '.' && r != ',' && r != '!' && r != '?' && r != ';' && r != ':' {
+	for _, caractere := range mot {
+		if caractere != '.' && caractere != ',' && caractere != '!' && caractere != '?' && caractere != ';' && caractere != ':' {
 			return true
 		}
 	}
 	return false
 }
 
-func appliquerOrdres(arr []string) []string {
-
-	for i := 0; i < len(arr)-1; i++ {
-		if strings.HasPrefix(arr[i], "(") && strings.HasSuffix(arr[i], ",") {
-			p2, _ := ExtrairePonctuation(arr[i+1])
-			if strings.HasSuffix(p2, ")") {
-				arr[i] = arr[i] + " " + arr[i+1]
-				arr = SupprimerChaine(arr, i+1)
+func appliquerOrdres(mots []string) []string {
+	for position := 0; position < len(mots)-1; position++ {
+		if strings.HasPrefix(mots[position], "(") && strings.HasSuffix(mots[position], ",") {
+			motSuivantNettoye, _ := ExtrairePonctuation(mots[position+1])
+			if strings.HasSuffix(motSuivantNettoye, ")") {
+				mots[position] = mots[position] + " " + mots[position+1]
+				mots = SupprimerChaine(mots, position+1)
 			}
 		}
 	}
 
+	positionDebut := 0
+	for len(mots) > 0 && positionDebut < len(mots) {
+		motNettoye, _ := ExtrairePonctuation(mots[positionDebut])
+		estDrapeauNombre, _, _ := EstDrapeauAvecNombre(motNettoye)
 
-	counter := 0
-	for len(arr) > 0 && counter < len(arr) {
-		token, _ := ExtrairePonctuation(arr[counter])
-		iFv, _, _ := EstDrapeauAvecNombre(token)
-
-		if !(EstDrapeauSimple(token) || iFv) && arr[counter] != "" {
+		if !(EstDrapeauSimple(motNettoye) || estDrapeauNombre) && mots[positionDebut] != "" {
 			break
 		}
 
-		if arr[counter] == "" {
-			counter++
+		if mots[positionDebut] == "" {
+			positionDebut++
 			continue
 		}
-		arr = SupprimerChaine(arr, counter)
+		mots = SupprimerChaine(mots, positionDebut)
 	}
 
-	for i := 1; i < len(arr); i++ {
-		token, trailingPunct := ExtrairePonctuation(arr[i])
+	for position := 1; position < len(mots); position++ {
+		motNettoye, ponctuationFinale := ExtrairePonctuation(mots[position])
 
-		if EstDrapeauSimple(token) {
-			target := i - 1
-			for target >= 0 && !estMotValide(arr[target]) {
-				target--
+		if EstDrapeauSimple(motNettoye) {
+			positionCible := position - 1
+			for positionCible >= 0 && !estMotValide(mots[positionCible]) {
+				positionCible--
 			}
-			if target >= 0 {
-				switch token {
+			if positionCible >= 0 {
+				switch motNettoye {
 				case "(hex)":
-					if nbr, err := strconv.ParseInt(arr[target], 16, 64); err == nil {
-						arr[target] = strconv.Itoa(int(nbr))
+					if valeur, erreur := strconv.ParseInt(mots[positionCible], 16, 64); erreur == nil {
+						mots[positionCible] = strconv.Itoa(int(valeur))
 					}
 				case "(bin)":
-					if nbr, err := strconv.ParseInt(arr[target], 2, 64); err == nil {
-						arr[target] = strconv.Itoa(int(nbr))
+					if valeur, erreur := strconv.ParseInt(mots[positionCible], 2, 64); erreur == nil {
+						mots[positionCible] = strconv.Itoa(int(valeur))
 					}
 				case "(up)":
-					arr[target] = strings.ToUpper(arr[target])
+					mots[positionCible] = strings.ToUpper(mots[positionCible])
 				case "(low)":
-					arr[target] = strings.ToLower(arr[target])
+					mots[positionCible] = strings.ToLower(mots[positionCible])
 				case "(cap)":
-					arr[target] = Capitaliser(arr[target])
+					mots[positionCible] = Capitaliser(mots[positionCible])
 				}
-				if trailingPunct != "" {
-					arr[target] = arr[target] + trailingPunct
+				if ponctuationFinale != "" {
+					mots[positionCible] = mots[positionCible] + ponctuationFinale
 				}
 			}
-			arr = SupprimerChaine(arr, i)
-			i--
-		} else if bl, key, nbr := EstDrapeauAvecNombre(token); bl {
-			if nbr > 0 {
-				modifies := 0
-				lastTarget := -1
-				for j := i - 1; j >= 0 && modifies < nbr; j-- {
-					if estMotValide(arr[j]) {
-						switch key {
+			mots = SupprimerChaine(mots, position)
+			position--
+		} else if estDrapeauNombre, nomDrapeau, nombre := EstDrapeauAvecNombre(motNettoye); estDrapeauNombre {
+			if nombre > 0 {
+				motsModifies := 0
+				positionDernierMotModifie := -1
+				for positionMot := position - 1; positionMot >= 0 && motsModifies < nombre; positionMot-- {
+					if estMotValide(mots[positionMot]) {
+						switch nomDrapeau {
 						case "up":
-							arr[j] = strings.ToUpper(arr[j])
+							mots[positionMot] = strings.ToUpper(mots[positionMot])
 						case "low":
-							arr[j] = strings.ToLower(arr[j])
+							mots[positionMot] = strings.ToLower(mots[positionMot])
 						case "cap":
-							arr[j] = Capitaliser(arr[j])
+							mots[positionMot] = Capitaliser(mots[positionMot])
 						}
-						if lastTarget == -1 {
-							lastTarget = j
+						if positionDernierMotModifie == -1 {
+							positionDernierMotModifie = positionMot
 						}
-						modifies++
+						motsModifies++
 					}
 				}
-				if lastTarget != -1 && trailingPunct != "" {
-					arr[lastTarget] = arr[lastTarget] + trailingPunct
+				if positionDernierMotModifie != -1 && ponctuationFinale != "" {
+					mots[positionDernierMotModifie] = mots[positionDernierMotModifie] + ponctuationFinale
 				}
 			}
-			arr = SupprimerChaine(arr, i)
-			i--
+			mots = SupprimerChaine(mots, position)
+			position--
 		}
 	}
 
-	return arr
+	return mots
 }
 
-func TraiterOrdres(str string) string {
-	lines := strings.Split(str, "\n")
-	finalLines := []string{}
-	for _, line := range lines {
-		words := strings.Split(line, " ")
-		words = appliquerOrdres(words)
-		finalLines = append(finalLines, strings.Join(words, " "))
+func TraiterOrdres(texte string) string {
+	lignes := strings.Split(texte, "\n")
+	lignesCorrigees := []string{}
+	for _, ligne := range lignes {
+		mots := strings.Split(ligne, " ")
+		mots = appliquerOrdres(mots)
+		lignesCorrigees = append(lignesCorrigees, strings.Join(mots, " "))
 	}
 
-	return strings.Join(finalLines, "\n")
+	return strings.Join(lignesCorrigees, "\n")
 }

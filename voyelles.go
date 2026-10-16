@@ -2,16 +2,16 @@ package main
 
 import "strings"
 
-func TraiterVoyelles(str string) string {
-	lines := strings.Split(str, "\n")
-	for i := 0; i < len(lines); i++ {
-		arr := strings.Split(lines[i], " ")
-		for j := 0; j < len(arr)-1; j++ {
-			if (arr[j] == "a" || arr[j] == "A") && estVoyelle(arr[j+1]) {
-				arr[j] = arr[j] + "n"
+func TraiterVoyelles(texte string) string {
+	lignes := strings.Split(texte, "\n")
+	for numeroLigne := 0; numeroLigne < len(lignes); numeroLigne++ {
+		mots := strings.Split(lignes[numeroLigne], " ")
+		for numeroMot := 0; numeroMot < len(mots)-1; numeroMot++ {
+			if (mots[numeroMot] == "a" || mots[numeroMot] == "A") && estVoyelle(mots[numeroMot+1]) {
+				mots[numeroMot] = mots[numeroMot] + "n"
 			}
 		}
-		lines[i] = strings.Join(arr, " ")
+		lignes[numeroLigne] = strings.Join(mots, " ")
 	}
-	return strings.Join(lines, "\n")
+	return strings.Join(lignes, "\n")
 }
